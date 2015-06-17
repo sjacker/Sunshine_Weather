@@ -7,4 +7,10 @@
     <string name="hello_world">Hello world!</string>
     <string name="update">Getting Weather Data</string>
     <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings for general preference screen -->
+    <string name="pref_location_title">Location</string>
+    <string name="pref_location_key">location</string>
+    <string name="default_zip">48336</string>
+
 </resources>

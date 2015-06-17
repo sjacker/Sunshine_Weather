@@ -1,9 +1,11 @@
 package com.example.sjacker.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -29,8 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Mine on 4/10/15.
@@ -61,10 +61,11 @@ public class ForecastFragment extends Fragment{
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("48336");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = prefs.getString(getString(R.string.pref_location_key),
+                    getString(R.string.default_zip));
+            weatherTask.execute(location);
             return true;
-
-            /*Toast.makeText(getActivity(), R.string.update, Toast.LENGTH_SHORT).show();*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -73,27 +74,13 @@ public class ForecastFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
-
-        //Dummy Data eh
-        String[] data = {
-                "Monday yo - Hurricane - 69/69",
-                "Tuesday eh - Flash Flood - 20/98",
-                "Wednesday duh - Tornado - 1",
-                "Thursday yea - Monsoon - -69/69",
-                "FRIDAY - Sunny - 70",
-                "Saturday - Sunny - 87/62",
-                "Sunday - Easter - Jesus",
-        };
-
-        final List<String> weekForecast = new ArrayList<>(Arrays.asList(data));
-
         //Create Array adapter
         mForecastAdapter =
                 new ArrayAdapter<>(
                         getActivity(),
                         R.layout.list_item_forecast,
                         R.id.list_item_forecast_view,
-                        weekForecast);
+                        new ArrayList<String>());
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -105,8 +92,6 @@ public class ForecastFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String forecast = mForecastAdapter.getItem(position);
-                /*Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
-                String forecast = mForecastAdapter.getItem(position);*/
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, forecast);
                 startActivity(intent);
@@ -116,6 +101,22 @@ public class ForecastFragment extends Fragment{
 
         return rootView;
     }
+
+
+    private void updateWeather() {
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.default_zip));
+        weatherTask.execute(location);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
 
     public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
 
