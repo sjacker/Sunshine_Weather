@@ -9,6 +9,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="action_preferred_location">View Preferred Location</string>
     <string name="action_selfie">Snap a Selfie</string>
+    <string name="action_share">Share Weather</string>
 
     <!-- Strings for general preference screen
     Location -->
